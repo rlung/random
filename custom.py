@@ -159,6 +159,22 @@ def bh_correction(p_vals, fdr=0.05, asmask=False):
 
 #%% Plotting
 
+def style(key='default'):
+    import matplotlib as mpl
+    from cycler import cycler
+
+    if key == 'default':
+        pass
+    elif key == 'succulent':
+        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
+            '#FB6A64',
+            '#654756',
+            '#698184',
+            '#B5C5C7',
+            '#D8E1DB',
+            '#FEC8C7',
+        ])
+
 def nx_to_pydot(G, pydot_file=None, ext='raw', iplot=True, prog='neato'):
     
     import pydot
