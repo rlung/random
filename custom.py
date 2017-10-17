@@ -163,187 +163,83 @@ def style(key='default'):
     import matplotlib as mpl
     from cycler import cycler
 
-    if key == 'default':
-        pass
-    elif key == 'succulent':
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#FB6A64',
-            '#654756',
-            '#698184',
-            '#B5C5C7',
-            '#D8E1DB',
+    colors = {
+        # https://www.design-seeds.com/
+        'succulent': [
+            '#FB6A64', '#654756', '#698184', '#B5C5C7', '#D8E1DB',
             '#FEC8C7',
-        ])
-    elif key == 'color-sea':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#C6C1CB',
-            '#283040',
-            '#3C5465',
-            '#638689',
-            '#B5D5D8',
+        ],
+        'color-sea': [
+            '#C6C1CB', '#283040', '#3C5465', '#638689', '#B5D5D8',
             '#E0E4E9',
-        ])
-    elif key == 'color-gaze':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#41474B',
-            '#1E1E23',
-            '#25355F',
-            '#4C6FA6',
-            '#85BEDC',
+        ],
+        'color-gaze': [
+            '#41474B', '#1E1E23', '#25355F', '#4C6FA6', '#85BEDC',
             '#EDE1CF',
-        ])
-    elif key == 'summer-sky':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#DCCFC1',
-            '#233B4D',
-            '#37617B',
-            '#6C98AE',
-            '#BCD1DD',
+        ],
+        'summer-sky': [
+            '#DCCFC1', '#233B4D', '#37617B','#6C98AE', '#BCD1DD',
             '#E3F0F1',
-        ])
-    elif key == 'color-view':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#84A19E',
-            '#587674',
-            '#B25949',
-            '#E09A80',
-            '#DEDAC5',
+        ],
+        'color-view': [
+            '#84A19E', '#587674', '#B25949', '#E09A80', '#DEDAC5',
             '#E0E0DA',
-        ])
-    elif key == 'flora-tones':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#DDBC90',
-            '#06201E',
-            '#304C43',
-            '#C2C6C5',
-            '#D6DBD9',
+        ],
+        'flora-tones': [
+            '#DDBC90', '#06201E', '#304C43', '#C2C6C5', '#D6DBD9',
             '#E9E8E4',
-        ])
-    elif key == 'creature-color':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#F0F0F0',
-            '#E6E6EC',
-            '#444444',
-            '#D79763',
-            '#FBCD8D',
+        ],
+        'creature-color': [
+            '#F0F0F0', '#E6E6EC', '#444444', '#D79763', '#FBCD8D',
             '#EFEFE4',
-        ])
-    elif key == 'color-creature':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#EDEFF0',
-            '#E1DFDF',
-            '#D8C8AD',
-            '#74786F',
-            '#A19E50',
+        ],
+        'color-creature': [
+            '#EDEFF0', '#E1DFDF', '#D8C8AD', '#74786F', '#A19E50',
             '#D1D588',
-        ])
-    elif key == 'color-nature':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#CBE8F3',
-            '#213B3B',
-            '#305045',
-            '#6F987A',
-            '#B1D4A6',
+        ],
+        'color-nature': [
+            '#CBE8F3', '#213B3B', '#305045', '#6F987A', '#B1D4A6',
             '#E6E4CA',
-        ])
-    elif key == 'foraged-hues':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#CECFDC',
-            '#AEBED1',
-            '#6A7D7A',
-            '#4B4546',
-            '#CF6C57',
+        ],
+        'foraged-hues': [
+            '#CECFDC', '#AEBED1', '#6A7D7A', '#4B4546', '#CF6C57',
             '#ECD6DC',
-        ])
-    elif key == 'barn-tones':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#E8E8E8',
-            '#2C2C2B',
-            '#4C3332',
-            '#763635',
-            '#903A3B',
+        ],
+        'barn-tones': [
+            '#E8E8E8', '#2C2C2B', '#4C3332', '#763635', '#903A3B',
             '#AE5D5A',
-        ])
-    elif key == 'still-tones':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#EAE8E4',
-            '#D1CBC9',
-            '#7F8A7F',
-            '#474247',
-            '#5A5979',
+        ],
+        'still-tones': [
+            '#EAE8E4', '#D1CBC9', '#7F8A7F', '#474247', '#5A5979',
             '#8E8DAF',
-        ])
-    elif key == 'fresh-hues':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#87B083',
-            '#2E503D',
-            '#DFAC5A',
-            '#EBD175',
-            '#F0EEA5',
+        ],
+        'fresh-hues': [
+            '#87B083', '#2E503D','#DFAC5A', '#EBD175', '#F0EEA5',
             '#F1F9CF',
-        ])
-    elif key == 'market-hues':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#BA2F27',
-            '#441825',
-            '#6A89B1',
-            '#C5C4D6',
-            '#DDD7E3',
+        ],
+        'market-hues': [
+            '#BA2F27', '#441825', '#6A89B1', '#C5C4D6', '#DDD7E3',
             '#EAE3E4',
-        ])
-    elif key == 'coor-sip':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#6EB6BE',
-            '#387277',
-            '#373737',
-            '#664C3E',
-            '#D98F5E',
+        ],
+        'coor-sip': [
+            '#6EB6BE', '#387277', '#373737', '#664C3E', '#D98F5E',
             '#F0D8BB',
-        ])
-    elif key == 'color-serve':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#C1C6CD',
-            '#242F3E',
-            '#513F41',
-            '#CCB7A9',
-            '#E2D5CE',
+        ],
+        'color-serve': [
+            '#C1C6CD', '#242F3E', '#513F41', '#CCB7A9', '#E2D5CE',
             '#F0EFE8',
-        ])  
-    elif key == 'color-collect':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#FACFAA',
-            '#DE8864',
-            '#17311F',
-            '#2B6D39',
-            '#6BA085',
+        ],
+        'color-collect': [
+            '#FACFAA', '#DE8864', '#17311F', '#2B6D39', '#6BA085',
             '#AACDCA',
-        ])  
-    elif key == 'shelved-hues':
-        # https://www.design-seeds.com/category/wander/sea/
-        mpl.rcParams['axes.prop_cycle'] = cycler(color=[
-            '#F5EEF0',
-            '#E7D3D5',
-            '#C49A63',
-            '#67575A',
-            '#6E7175',
+        ],
+        'shelved-hues': [
+            '#F5EEF0', '#E7D3D5', '#C49A63', '#67575A', '#6E7175',
             '#B2C1BA',
-        ]) 
+        ]
+    }
+
+    mpl.rcParams['axes.prop_cycle'] = cycler(color=colors[key])
         
         
 def nx_to_pydot(G, pydot_file=None, ext='raw', iplot=True, prog='neato'):
