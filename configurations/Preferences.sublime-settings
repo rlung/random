@@ -1,8 +1,15 @@
 {
-    "color_scheme": "Packages/Color Scheme - Default/Mariana.tmTheme",
-    "font_size": 10.5,
-    "font_face": "Inconsalata",
-    "ignored_packages": ["Vintage"],
-    "theme": "Default.sublime-theme",
-    "rulers": [80, 120],
+	"color_scheme": "Packages/Color Scheme - Default/Mariana.tmTheme",
+	"font_face": "Inconsalata",
+	"font_size": 9,
+	"ignored_packages":
+	[
+		"Vintage"
+	],
+	"rulers":
+	[
+		80,
+		120
+	],
+	"theme": "Default.sublime-theme"
 }

@@ -1,3 +1,4 @@
-**/*.sublime-*
+**/*.sublime-workspace
+**/*.sublime-project
 **/*.pyc
 **/*.ipynb_checkpoints
