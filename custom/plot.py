@@ -1,8 +1,12 @@
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+import matplotlib.patches as patches
+from matplotlib import animation
+from cycler import cycler
 
 
 def style(key='default'):
-    import matplotlib as mpl
-    from cycler import cycler
 
     colors = {
         # https://www.design-seeds.com/
@@ -81,30 +85,27 @@ def style(key='default'):
     }
 
     if key == 'view':
-        print('Creating view of all color cycless')
-        import matplotlib.pyplot as plt
-        import matplotlib.patches as patches
-
         w = 2
         h = 1
         fig, ax = plt.subplots()
         for i, (k, v) in enumerate(colors.iteritems()):
             for j, c in enumerate(v):
-                pos = (j * w, i * h * 2) 
+                pos = (j * w, i * h * 2 - h/2.) 
                 ax.add_patch(patches.Rectangle(pos, w, h, color=c))
-        ax.autoscale()
         ax.axis('image')
         ax.xaxis.set_visible(False)
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['bottom'].set_visible(False)
+        ax.spines['left'].set_visible(False)
         ax.set_yticks([x * h * 2 for x in range(len(colors.keys()))])
         ax.set_yticklabels(colors.keys())
         plt.show()
-
-
     elif key in colors.keys():
         mpl.rcParams['axes.prop_cycle'] = cycler(color=colors[key])
-        print('{} set'.format(key))
+        print('{} set as color cycle'.format(key))
     else:
-        ValueError('Unknown key')
+        raise KeyError('Unknown key')
         
         
 def nx_to_pydot(G, pydot_file=None, ext='raw', iplot=True, prog='neato'):
@@ -135,11 +136,8 @@ def nx_to_pydot(G, pydot_file=None, ext='raw', iplot=True, prog='neato'):
 
 
 def hinton(matrix, max_weight=None, ax=None):
+    """Draw Hinton diagram for visualizing a weight matrix.
     """
-    Draw Hinton diagram for visualizing a weight matrix.
-    """
-    
-    import matplotlib.pyplot as plt
 
     ax = ax if ax is not None else plt.gca()
 
@@ -219,12 +217,7 @@ def animate(movies, axis=0, cmap=None, clim=None, colorbar=False,
     # Viability check
 #     if movie.ndim != 3:
 #         raise ValueError("Input array must be 3-dimensional.")
-    
-    import matplotlib.pyplot as plt
-    from matplotlib import animation
-    import matplotlib.gridspec as gridspec
-    
-    
+
     if save or not plot:
         istate = plt.isinteractive()
         if istate: plt.ioff()
@@ -283,10 +276,7 @@ def animate(movies, axis=0, cmap=None, clim=None, colorbar=False,
     return anim
 
 def make_mov(filename, movie, roi=None, roi_color=[0, 1, 0], cmap=None, vmin=0, vmax=127, fps=30, dpi=100, title='', comments=''):
-    import matplotlib
-    matplotlib.use('Agg')
-    import matplotlib.pyplot as plt
-    import matplotlib.animation as manimation
+    mpl.use('Agg')
 
     dt, dy, dx = movie.shape
 
@@ -324,7 +314,7 @@ def make_mov(filename, movie, roi=None, roi_color=[0, 1, 0], cmap=None, vmin=0, 
 
     # Movie writer
     # from https://matplotlib.org/examples/animation/moviewriter.html
-    FFMpegWriter = manimation.writers['ffmpeg']
+    FFMpegWriter = animation.writers['ffmpeg']
     metadata = dict(
         title=title,
         artist="Randall Ung",
@@ -349,7 +339,6 @@ def play(movie, movie2=None, frames=None, roi=None, roi_color=[0, 1, 0], text=No
     TODO: play only certain frames defined by `frames` input
     '''
 
-    import matplotlib.pyplot as plt
     from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
     import platform
     import cv2
