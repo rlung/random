@@ -4,6 +4,7 @@ import matplotlib.gridspec as gridspec
 import matplotlib.patches as patches
 from matplotlib import animation
 from cycler import cycler
+import numpy as np
 
 
 def style(key='default'):
@@ -364,9 +365,12 @@ def play(movie, movie2=None, frames=None, roi=None, roi_color=[0, 1, 0], text=No
             self.multiroi = False
             
             if roi is not None:
-                if isinstance(roi, str) and os.path.isfile(roi):
-                    # parameter is filename
-                    polyroi = np.loadtxt(roi, delimiter=',').astype('int32')
+                if isinstance(roi, str)
+                    if os.path.isfile(roi):
+                        # parameter is filename
+                        polyroi = np.loadtxt(roi, delimiter=',').astype('int32')
+                    else:
+                        raise IOError('File does not exist.')
                 else:
                     polyroi = np.array(roi)
                     if len(polyroi.shape) == 2:
@@ -375,8 +379,7 @@ def play(movie, movie2=None, frames=None, roi=None, roi_color=[0, 1, 0], text=No
                     else:
                         # parameter is series of roi
                         if len(polyroi) != dt:
-                            print("Length of movie and ROI do not match")
-                            return
+                            raise IOError('Length of movie and ROI do not match')
                         else:
                             self.multiroi = True
             else:
