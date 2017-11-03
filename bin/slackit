@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# Webhook address can be defined by environment variable SLACK_WEBHOOK
+
+help () {
+    echo "Usage: $(basename "$0") [OPTION] MESSAGE"
+    echo "Sends MESSAGE through Slack. Environment variable 'SLACK_WEBHOOK' must be defined"
+    echo "  -h       Displays this help and exits"
+    echo "  -c       Channel or user to send MESSAGE"
+    echo "  -u       Username to send MESSAGE under"
+    echo "  -i       Emoji icon for username"
+    echo "  -w       Webhook address"
+    # echo "  -v       Verbose"
+}
+
+# Default values
+channel=@randall
+username="randalls_bot"
+icon=:c3po:
+verbose=false
+if [ ! -z $SLACK_WEBHOOK ]; then
+    webhook=$SLACK_WEBHOOK
+fi
+
+# Parse arguments
+while [ $# -gt 0 ]
+do
+    case $1 in
+        -h) help; exit 0;;
+        -c) channel=$2; shift;;
+        -u) username=$2; shift;;
+        -i) icon=$2; shift;;
+        -w) webhook=$2; shift;;
+        -v) verbose=true;;
+        -*) echo "Error: $1 flag is illegal. Run '$(basename $0) -h' for help"; exit 1;;
+        *) msg=$1;;
+    esac
+    shift
+done
+
+# Check variables
+if [ -z "$msg" ]; then
+    echo "Error: no message defined."
+    exit 1
+fi
+
+if [ -z "$webhook" ]; then
+    echo "Error: no webhook address defined."
+    exit 1
+fi
+
+# Send slack message
+if $verbose; then
+    curl -sX POST --data-urlencode "payload={ \
+        'text': '$msg', \
+        'channel': '$channel', \
+        'username': '$username', \
+        'icon_emoji': '$icon'}" \
+        $webhook
+    echo ''
+else
+    curl -sX POST --data-urlencode "payload={ \
+        'text': '$msg', \
+        'channel': '$channel', \
+        'username': '$username', \
+        'icon_emoji': '$icon'}" \
+        $webhook > /dev/null
+fi
