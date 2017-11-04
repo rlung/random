@@ -123,15 +123,15 @@ def zscore_base(data, baseline, axis=0):
     return np.swapaxes(data_z, 0, axis)
 
 
-def bh_correction(p_vals, fdr=0.05, asmask=False):
-    '''
+def bh_correction(p_vals, fdr=0.05, as_mask=False):
+    '''Benjamini-Hochberg correction
     Multiple comparisons correction by controlling false discovery rate.
     Assumes tests are independent of each other, eg, A vs B, C vs D, ...
     '''
     
     # Parameters
     # p_vals:  p_values obtained from multiple comparisons
-    # fdr:    false discovery rate (FDR)
+    # fdr:     false discovery rate (FDR)
     # 
     # Returns
     # Array of indices corresponding to p_values that remain significant
@@ -142,10 +142,12 @@ def bh_correction(p_vals, fdr=0.05, asmask=False):
     m = len(p_ord)
     threshold = fdr * (np.arange(m) + 1) / m
     p_small = np.where(p_ord < threshold)[0]
+
     if p_small.size:
+        # At least one p value made the cutoff
         cutoff = p_small[-1]
         
-        if asmask:
+        if as_mask:
             significant_ix = np.zeros(p_vals.shape, dtype=bool)
             significant_ix[p_ord_ix[:cutoff + 1]] = True
         else:
@@ -153,6 +155,7 @@ def bh_correction(p_vals, fdr=0.05, asmask=False):
 
         return significant_ix
     else:
+        # No p values made the cutoff
         return None
 
 

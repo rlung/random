@@ -1,2 +1,2 @@
 from custom import *
-import plot
+from plot import *
