@@ -41,7 +41,7 @@ div.text_cell_render h6 {
 
 
 /*Notebook 'structure'*/
-div#maintoolbar {display: none !important;}  /*Remove tool bar*/
+/*div#maintoolbar {display: none !important;}  /*Remove tool bar*/
 /*div#header {display: none !important;}*/
 
 div#notebook {background-color: #dddddd;}

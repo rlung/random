@@ -5,6 +5,7 @@ import matplotlib.patches as patches
 from matplotlib import animation
 from cycler import cycler
 import numpy as np
+import platform
 
 
 def style(key='default'):
@@ -330,9 +331,9 @@ def make_mov(filename, movie, roi=None, roi_color=[0, 1, 0], cmap=None, vmin=0, 
 
     print('Movie finished.')
 
-def play(movie, movie2=None, frames=None, roi=None, roi_color=[0, 1, 0], text=None,
-         axis=0, cmap=None, clim=None, colorbar=False,
-         plot=True, interpolation='none'):
+def play(movie, movie2=None, frames=None, roi=None, roi_color=[0, 1, 0],
+         window_title='Custom player', text=None, axis=0, colorbar=False,
+         plot=True, interpolation='none', dpi=100, **kwargs):
     '''
     roi: if multiple ROIs, first dimension should be 2 (i.e., X and Y values)
 
@@ -341,8 +342,6 @@ def play(movie, movie2=None, frames=None, roi=None, roi_color=[0, 1, 0], text=No
     '''
 
     from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-    import platform
-    import cv2
     import Tkinter as tk
 
 
@@ -365,7 +364,7 @@ def play(movie, movie2=None, frames=None, roi=None, roi_color=[0, 1, 0], text=No
             self.multiroi = False
             
             if roi is not None:
-                if isinstance(roi, str)
+                if isinstance(roi, str):
                     if os.path.isfile(roi):
                         # parameter is filename
                         polyroi = np.loadtxt(roi, delimiter=',').astype('int32')
@@ -386,8 +385,8 @@ def play(movie, movie2=None, frames=None, roi=None, roi_color=[0, 1, 0], text=No
                 pass
 
             # Viewing window
-            fig, self.ax = plt.subplots(figsize=(6*dx/dy, 6))
-            self.im = self.ax.imshow(movie[0], cmap=cmap, interpolation=interpolation)
+            fig, self.ax = plt.subplots(dpi=dpi, figsize=(dx/dpi, dy/dpi))
+            self.im = self.ax.imshow(movie[0], **kwargs)
             if roi is not None:
                 if self.multiroi:
                     self.line, = self.ax.plot(polyroi[0][0], polyroi[0][1], color=roi_color)
@@ -398,7 +397,6 @@ def play(movie, movie2=None, frames=None, roi=None, roi_color=[0, 1, 0], text=No
             self.ax.set_xlim([0, movie.shape[2] - 1])
             self.ax.axis('off')
             fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
-            if clim: self.im.set_clim(clim)
             if colorbar: fig.colorbar(self.im, cax=self.ax)
 
             self.canvas = FigureCanvasTkAgg(fig, parent)
@@ -475,7 +473,7 @@ def play(movie, movie2=None, frames=None, roi=None, roi_color=[0, 1, 0], text=No
             self.canvas.draw_idle()
 
     root = tk.Tk()
-    root.wm_title("Custom player")
+    root.wm_title(window_title)
     app = Viewer(root)
     root.mainloop()
 
