@@ -6,7 +6,7 @@ import pdb
 
 #%% Data management
 
-def resample(data, ts, ts_ds, axis=0, empty_bin=0, method=np.mean, dtype=float):
+def resample(data, ts, ts_ds, axis=0, empty_bin=np.nan, method=np.mean, dtype=float):
     '''
     Downsamples data into new timestamps
     `data` is fitted into `ts_ds`. Throws out data points that do not fall
@@ -211,7 +211,7 @@ def etho_extract(filename, data_row=None, header=-2, index_col=1):
         return -1
     
     ext = os.path.splitext(filename)[1]
-    if ext in ['xls', 'xlsx']:
+    if ext in ['.xls', '.xlsx']:
         # Import Excel file
         from openpyxl import load_workbook
         if data_row is None:
@@ -229,7 +229,7 @@ def etho_extract(filename, data_row=None, header=-2, index_col=1):
             na_values='-',
             index_col=index_col
         )
-    elif ext in ['txt', 'csv']:
+    elif ext in ['.txt', '.csv']:
         raise IOError('Unable to process text files at the moment.')
     else:
         raise IOError('Unrecognized file type.')

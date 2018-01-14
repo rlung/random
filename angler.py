@@ -35,8 +35,8 @@ def angler(angle, x, y, degrees=False, plot=False):
         ax.annotate(
             'old: ({:.3f}, {:.3f})\n'
             'new: ({:.3f}, {:.3f})'.format(x, y, x_angled, y_angled),
-            xy=(x, y), xytext=(x * 0.8, y * 1.1), ha='right',
-            arrowprops=dict(facecolor='black', width=2, headwidth=10, shrink=0.2),
+            xy=(x, y), xytext=(x - 1, y + 1), ha='right',
+            arrowprops=dict(facecolor='black', width=2, headwidth=10, shrink=0.1),
         )
 
         # Non-angled path
