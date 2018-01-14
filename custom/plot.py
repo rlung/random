@@ -109,7 +109,36 @@ def style(key='default'):
     else:
         raise KeyError('Unknown key')
         
-        
+
+def cdf(array, ax=None, **kwargs):
+    '''Creates cumulative distribution function from array of data points
+    Parameters
+    ----------
+    array : array_like
+        Array to plot CDF. If more than one dimension, array will be flattened.
+    ax : Axes object, optional
+        Axes on which to plot CDF.
+    **kwargs: keyword arguments
+        Keyword arguments for matplotlib.pyplot.plot.
+
+    Returns
+    ----------
+    ax: axes object containing CDF
+
+    '''
+    array = np.array(array).flatten()
+
+    X = np.sort(array)
+    Y = np.arange(len(array), dtype=float) / len(array)
+    if ax:
+        ax.plot(X, Y, **kwargs)
+    else:
+        _, ax = plt.subplots()
+        ax.plot(X, Y, **kwargs)
+
+    return ax
+
+
 def nx_to_pydot(G, pydot_file=None, ext='raw', iplot=True, prog='neato'):
     
     import pydot
