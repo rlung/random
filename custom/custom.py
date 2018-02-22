@@ -70,7 +70,7 @@ def xy_interp(x, y):
     
     nan_ix = np.isnan(x)
     if np.any(nan_ix != np.isnan(y)):
-        print 'NaN do not align between x and y coordinates'
+        print('NaN do not align between x and y coordinates')
 
     # Find indices where data is missing
     holes = np.diff(np.int_(nan_ix))
@@ -112,7 +112,7 @@ def zscore_base(data, baseline, axis=0):
             b0 = baseline[0]
             b1 = baseline[1]
         else:
-            print "Incorrect baseline parameter"
+            print('Incorrect baseline parameter')
             return
 
     data = np.swapaxes(data, axis, 0)

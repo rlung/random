@@ -1,11 +1,14 @@
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import matplotlib.gridspec as gridspec
 import matplotlib.patches as patches
 from matplotlib import animation
 from cycler import cycler
 import numpy as np
 import platform
+
+
 
 
 def style(key='default'):
@@ -110,7 +113,14 @@ def style(key='default'):
         raise KeyError('Unknown key')
         
 
-def cdf(array, ax=None, **kwargs):
+def raster(events_list, **kwargs):
+    '''Creates raster plot from list of event timestamps
+    '''
+    for n, row in enumerate(events_lists):
+        pass
+
+
+def cdf(array, ax=None, ignore_nan=True, **kwargs):
     '''Creates cumulative distribution function from array of data points
     Parameters
     ----------
@@ -118,6 +128,8 @@ def cdf(array, ax=None, **kwargs):
         Array to plot CDF. If more than one dimension, array will be flattened.
     ax : Axes object, optional
         Axes on which to plot CDF.
+    ignore_nan : boolean
+        Whether to ignore nan values in `array`.
     **kwargs: keyword arguments
         Keyword arguments for matplotlib.pyplot.plot.
 
@@ -127,6 +139,8 @@ def cdf(array, ax=None, **kwargs):
 
     '''
     array = np.array(array).flatten()
+    if ignore_nan:
+        array = array[~ np.isnan(array)]
 
     X = np.sort(array)
     Y = np.arange(len(array), dtype=float) / len(array)
@@ -137,6 +151,37 @@ def cdf(array, ax=None, **kwargs):
         ax.plot(X, Y, **kwargs)
 
     return ax
+
+
+def diverging_cmap(color_low, color_high, color_mid=[1, 1, 1], name='my_cmap', return_dict=False):
+    '''Return a diverging colormap
+    Parameters
+    ----------
+    color_high, color-low, color-mid : RGB-tuple
+        Defines colors at positions of colormap.
+
+    Returns
+    ----------
+    cmap : LinearSegmentedColormap
+        Diverging colormap.
+
+    '''
+    color_low = [float(x) for x in color_low]
+    color_high = [float(x) for x in color_high]
+    color_mid = [float(x) for x in color_mid]
+    
+    cdict = {
+        rgb: tuple([
+            (i/2., c[j], c[j])
+            for i, c in enumerate([color_low, color_mid, color_high])
+        ])
+        for j, rgb in enumerate(['red', 'green', 'blue'])
+    }
+
+    if return_dict:
+        return cdict
+    else:
+        return mcolors.LinearSegmentedColormap(name, cdict)
 
 
 def nx_to_pydot(G, pydot_file=None, ext='raw', iplot=True, prog='neato'):
@@ -361,7 +406,7 @@ def make_mov(filename, movie, roi=None, roi_color=[0, 1, 0], cmap=None, vmin=0, 
     print('Movie finished.')
 
 def play(movie, movie2=None, frames=None, roi=None, roi_color=[0, 1, 0],
-         window_title='Custom player', text=None, axis=0, colorbar=False,
+         window_title='Custom player', title=None, axis=0, colorbar=False,
          plot=True, interpolation='none', dpi=100, **kwargs):
     '''
     roi: if multiple ROIs, first dimension should be 2 (i.e., X and Y values)
@@ -371,47 +416,70 @@ def play(movie, movie2=None, frames=None, roi=None, roi_color=[0, 1, 0],
     '''
 
     from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-    import Tkinter as tk
+    try:
+        import tkinter as tk
+        import tkinter.ttk as ttk
+    except ImportError:
+        import Tkinter as tk
+        import ttk
 
 
     def playback(fps):
         pass
 
-    class Viewer(tk.Frame):
+    class Viewer(ttk.Frame):
 
         def __init__(self, parent):
             ew = 6
 
-            tk.Frame.__init__(self, parent)
+            self.var_title = tk.StringVar()
+            self.var_fps = tk.IntVar()
+            self.var_playing = tk.BooleanVar()
+            self.var_frame = tk.IntVar()
+
+            self.var_fps.set(30)
+
+            # Lay out viewer
+            ttk.Frame.__init__(self, parent)
             self.parent = parent
             parent.grid_columnconfigure(0, weight=1)
-            parent.grid_rowconfigure(0, weight=1)
+            parent.grid_rowconfigure(1, weight=1)
+
+            frame_title = ttk.Frame(parent)
+            frame_title.grid(row=0, column=0, sticky='we')
+            frame_title.grid_columnconfigure(0, weight=1)
+
+            frame_viewer = ttk.Frame(parent)
+            frame_viewer.grid(row=1, column=0, sticky='wens')
+            frame_viewer.grid_columnconfigure(0, weight=1)
+
+            frame_controls = ttk.Frame(parent)
+            frame_controls.grid(row=2, column=0, sticky='we')
+            frame_controls.grid_columnconfigure(2, weight=10)
     
-            dt, dy, dx = movie.shape
+            self.n_frames, dy, dx = movie.shape
             
             # Create ROI mask if defined
             self.multiroi = False
-            
             if roi is not None:
                 if isinstance(roi, str):
-                    if os.path.isfile(roi):
-                        # parameter is filename
-                        polyroi = np.loadtxt(roi, delimiter=',').astype('int32')
-                    else:
-                        raise IOError('File does not exist.')
+                    if not os.path.isfile(roi):
+                        raise IOError('File does not exist')
+
+                    # parameter is a path to file with roi
+                    polyroi = np.loadtxt(roi, delimiter=',').astype('int32')
+                    multiroi = True
                 else:
                     polyroi = np.array(roi)
-                    if len(polyroi.shape) == 2:
-                        # parameter is single roi
-                        pass
-                    else:
+                    if len(polyroi.shape) != 2:
                         # parameter is series of roi
-                        if len(polyroi) != dt:
+                        if len(polyroi) != self.n_frames:
                             raise IOError('Length of movie and ROI do not match')
                         else:
                             self.multiroi = True
-            else:
-                pass
+
+            # Title
+            ttk.Label(frame_title, textvariable=self.var_title, anchor='center').grid(row=0, column=0)
 
             # Viewing window
             fig, self.ax = plt.subplots(dpi=dpi, figsize=(dx/dpi, dy/dpi))
@@ -422,83 +490,74 @@ def play(movie, movie2=None, frames=None, roi=None, roi_color=[0, 1, 0],
                 else:
                     self.ax.plot(polyroi[:, 0], polyroi[:, 1], color=roi_color)
             
-            self.ax.set_ylim([movie.shape[1] - 1, 0])
-            self.ax.set_xlim([0, movie.shape[2] - 1])
+                self.ax.set_ylim([movie.shape[1] - 1, 0])
+                self.ax.set_xlim([0, movie.shape[2] - 1])
             self.ax.axis('off')
             fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
             if colorbar: fig.colorbar(self.im, cax=self.ax)
 
-            self.canvas = FigureCanvasTkAgg(fig, parent)
+            self.canvas = FigureCanvasTkAgg(fig, frame_viewer)
             self.canvas.show()
             self.canvas.draw()
             self.canvas.get_tk_widget().grid(row=0, column=0, sticky='wens')
 
-            # Slider
-            frame_tools = tk.Frame(parent)
-            frame_tools.grid(row=1, column=0, sticky='we')
-            # frame_tools.grid_columnconfigure(0, weight=1)
-            # frame_tools.grid_columnconfigure(1, weight=1)
-            frame_tools.grid_columnconfigure(2, weight=10)
-            # frame_tools.grid_columnconfigure(3, weight=1)
+            self.var_title.set(title[0] if isinstance(title, (list, np.ndarray)) else title)
 
-            self.var_playing = tk.BooleanVar()
+            # Viewer controls
+            self.button_play = ttk.Button(frame_controls, text=u"\u25B6", width=3, command=self.toggle_play)
+            self.scale = ttk.Scale(frame_controls, orient='horizontal', from_=0, to=self.n_frames-1, variable=self.var_frame, command=lambda x: self.update())
+            self.entry_frame = ttk.Entry(frame_controls, textvariable=self.var_frame, justify='center', width=ew)
+            ttk.Entry(frame_controls, textvariable=self.var_fps, justify='center', width=ew).grid(row=0, column=0, sticky='wens')
+            self.button_play.grid(row=0, column=1, sticky='wens')
+            self.scale.grid(row=0, column=2, sticky='wens')
+            self.entry_frame.grid(row=0, column=3, sticky='wens')
 
-            self.entry_fps = tk.Entry(frame_tools, justify='center', width=ew)
-            self.button_play = tk.Button(frame_tools, text=u"\u25B6", width=1, command=self.play_mov)
-            self.scale = tk.Scale(frame_tools, orient='horizontal', from_=0, to=dt-1,
-                showvalue=False, command=lambda val: self.update(val, 'scale'))
             if platform.system() == 'Linux':
                 self.scale.bind_all('<Button-4>', self.mousewheel)
                 self.scale.bind_all('<Button-5>', self.mousewheel)
             else:
                 self.scale.bind_all('<MouseWheel>', self.mousewheel)
-            self.entry_frame = tk.Entry(frame_tools, justify='center', width=ew)#, textvariable=self.var_frame)
-            self.entry_frame.bind('<Return>', lambda ev: self.update(self.entry_frame.get(), 'entry'))
-
-            self.entry_fps.grid(row=0, column=0, sticky='wens')
-            self.button_play.grid(row=0, column=1, sticky='wens')
-            self.scale.grid(row=0, column=2, sticky='wens')
-            self.entry_frame.grid(row=0, column=3, sticky='wens')
-
-            self.entry_fps.insert(0, 30)
+            self.entry_frame.bind('<Return>', self.update)
 
         def mousewheel(self, event):
             # https://stackoverflow.com/questions/17355902/python-tkinter-binding-mousewheel-to-scrollbar
             df = 0
             if platform.system() == 'Linux':
-                if event.num == 5:
-                    df = 1
-                if event.num == 4:
-                    df = -1
+                if event.num == 5: df = 1
+                if event.num == 4: df = -1
             else:
                 df = -event.delta / 120
 
             val = self.scale.get()
             self.scale.set(val + df)
 
-        def play_mov(self):
-            playing = self.var_playing.get()
-            if playing:
-                self.button_play['text'] = u'\u25B6'
-                fps = int(self.entry_fps.get())
+        def toggle_play(self):
+            was_playing = self.var_playing.get()
+            self.var_playing.set(not was_playing)
 
-                # Threading
+            if was_playing:
+                self.button_play['text'] = u'\u25B6'
             else:
                 self.button_play['text'] = u'\u23F8'
+                self.play_mov()
 
-            self.var_playing.set(not playing)
+        def play_mov(self):
+            if not self.var_playing.get(): return
+
+            new_frame = self.var_frame.get() + 1
+            if new_frame >= self.n_frames: new_frame = 0
+            self.var_frame.set(new_frame)
+            self.update()
+
+            try: self.var_fps.get()  # Craps out if entry_fps is blank
+            except: self.toggle_play()
+            self.parent.after(int(1000. / self.var_fps.get()), self.play_mov)
         
-        def update(self, frame, src):
-            n = int(frame)
-            if src != 'entry':
-                self.entry_frame.delete(0, tk.END)
-                self.entry_frame.insert(0, n)
-            if src != 'scale':
-                self.scale.set(n)            
-
+        def update(self):
+            n = self.var_frame.get()
             self.im.set_data(movie[n])
             if self.multiroi: self.line.set_data(roi[n].T)
-            if text is not None: self.ax.set_title(text[n])
+            if isinstance(title, (list, np.ndarray)): self.var_title.set(title[n])
             self.canvas.draw_idle()
 
     root = tk.Tk()
